@@ -1,11 +1,12 @@
 Package: mftable
+Title: mftable
+Authors@R: person("Soren", "Merser", email="soren@merser.dk", role = c("aut", "cre"))
+Description: "mftable is a package that extends ftable with LaTex and HTML output."
+LazyLoad: true
+LazyData: true
+Maintainer: Soren Merser <soren@merser.dk>
+BugReports: https://github.com/smerser/mftable/issues
+Depends: R (>= 2.0.1), methods, R2HTML
+License: GPL-2
 Version: 0.9
 Date: 2015-17-10
-Title: mftable Package
-Author: person("Soren Merser", email="soren@merser.dk")
-LazyLoad: yes
-Maintainer: Soren Merser <soren@merser.dk>
-Description: Easy print ftable (crosstabulation) to LaTeX and HTML
-Depends: R (>= 2.0.1), R2HTML
-License: GPL-2
-
