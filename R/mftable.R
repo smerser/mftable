@@ -30,6 +30,7 @@ setClass('mftable', representation(t='matrix', nr='integer', nc='integer', di='v
 
 mftable <- function(z, ...) {
     # create a mftable like ftable object i.e. from a formula, table or whatever
+
 bs=1
 if(class(z) != 'ftable') {
     x <- ftable(z, ...)
@@ -209,31 +210,26 @@ else {
                 }
             cat(rep('-',  (wdt+2)*ncol(e@t)), '\n', sep='')
         }
-    }
+}
+
 if(!is.na(correct)) print(chisq.test(as.double(z), correct=correct))
 }
 
 
 expected<-function(m) {
-# code from Venables and Ripley, p. 103
-fi.<-m %*% rep(1., ncol(m))
-f.j<-rep(1., nrow(m)) %*% m
-(fi. %*% f.j) / sum(fi.)
+# Code from MASS, Venables and Ripley, p. 103
+fi. <- m %*% rep(1., ncol(m))
+f.j <- rep(1., nrow(m)) %*% m
+return( (fi. %*% f.j) / sum(fi.) )
 }
 
 
 xte.mftable<-function(z, dig=3){
-d<-dim(z@t)
-rn<-rownames(z@t)
-cn<-colnames(z@t)
-e<-expected(as.numeric(z))
-z@t[(z@nc+1):d[1], (z@nr+1):d[2]]<-round(e, dig)
-z@t<-cbind(rbind(z@t,''),'')
-rownames(z@t)<-c(rn,'total')
-colnames(z@t)<-c(cn,'total')
-z
+d <- dim(z@t)
+e <- expected(as.numeric(z))
+z@t[(z@nc+1):d[1], (z@nr+1):d[2]] <- round(e, dig)
+return(z)
 }
-
 
 
 xts.mftable<-function(z, dig=3){
@@ -251,7 +247,7 @@ z@t<-cbind(rbind(z@t,''),'')
 z@t[(z@nc+1):(d[1]+1), (z@nr+1):(d[2]+1)]<-res
 rownames(z@t)<-c(rn,'total')
 colnames(z@t)<-c(cn,'total')
-z
+return(z)
 }
 
 xts.ftable<-function(z, dig=3) xts(mftable(z, dig))
@@ -275,7 +271,7 @@ xts.matrix<-function(z, dig=3){
 }
 
 # counts and totals for a ftable object
-xts.ftable<-function(x, dig=3, ...) xts(mftable(x, ...), dig)
+xts.ftable<-function(z, dig=3) xts(mftable(z), dig)
 
 
 xtr.mftable<-function(z, dig=3){
@@ -290,11 +286,11 @@ y<-round(cbind(xtr(y, dig), margin.table(y, 1)/sum(y)), dig)
 z@t<-cbind(z@t,'')
 z@t[(z@nc+1):d[1], (z@nr+1):(d[2]+1)]<-y
 colnames(z@t)<-c(cn, 'c.prop')
-z
+return(z)
 }
 
 # row proportion for a ftable object
-xtr.ftable<-function(z, ...) xtr(mftable(z), ...)
+xtr.ftable<-function(z, dig=3) xtr(mftable(z), dig)
 
 
 xtc.mftable<-function(z, dig=3){
@@ -309,7 +305,7 @@ y<-round(rbind(xtc(y, dig),margin.table(y, 2)/sum(y)), dig)
 z@t<-rbind(z@t,'')
 z@t[(z@nc+1):(d[1]+1), (z@nr+1):d[2]]<-y
 rownames(z@t)<-c(rn, 'r.prop')
-z
+return(z)
 }
 
 
@@ -339,11 +335,11 @@ z@t<-cbind(rbind(z@t,''),'')
 z@t[(z@nc+1):(d[1]+1), (z@nr+1):(d[2]+1)]<-res
 rownames(z@t)<-c(rn,'total')
 colnames(z@t)<-c(cn,'total')
-z
+return(z)
 }
 
 # proportion of total for a ftable object
-xtp.ftable<-function(x, rcsum=TRUE, dig=3) xtp(mftable(x), rcsum, dig)
+xtp.ftable<-function(z, rcsum=TRUE, dig=3) xtp(mftable(z), rcsum, dig)
 
 
 xtl.mftable<-function(z, size='tiny', align='center', caption=NA, loc='!htbp', hline=FALSE){
@@ -405,7 +401,7 @@ xtl<-function(z, size="tiny", align="center", caption=NULL, loc='!htbp', hline=F
 
 
 # row and column sums
-xts<-function(z, ...) { UseMethod("xts") }
+xts<-function(z, dig=3) { UseMethod("xts") }
 xts.default<-function(z, dig=3){
     z <- rbind(z, colSums(z))
     round(cbind(z, rowSums(z)), dig)

@@ -13,27 +13,38 @@
         \alias{subset}
         \alias{\%regex\%}
         \title{CrossTabulation - extending ftable}
+
         \description{
-          Crosstabulate summaries from \code{ftable} object (i.e. a flat contingency table).
-          \code{xts, xtr, xtc} gives counts, row and column proportions.
-          \code{xte} expected values
-          \code{xtp} cell proportion of total
-          \code{xta} prints a summary crosstabulation
-          \code{glm} pretty overload stats::glm prettyfying output
-	      \code{xtl} \code{ftable} to LaTex
-	      \code{xtl.default} \code{matrix} to LaTex
-	      \code{xth} \code{ftable} to HTML
-	      \code{subset} allow arg: drop.unused.levels
-	      \code{\%regex\%} match regular expressions within string array
-          \tabular{r}{
-                            N\cr
-                     Expected\cr
-                N / Row Total\cr
-                N / Col Total\cr
-                N / Table Total
-          }
-          \code{expected} calculate expected cell frequencies from a array, matrix or ftable.
-        }
+            Crosstabulate summaries from \code{ftable} object (i.e. a flat contingency table). Functions for LaTex or HTML output.
+            \tabular{llr}{
+
+            \code{xts, xtr, xtc} \tab Gives counts, row and column proportions \tab \cr
+
+            \code{xte}  \tab Expected values \tab \cr
+
+            \code{xtp}  \tab Cell proportion of total \tab \cr
+
+            \code{xtl}  \tab \code{ftable} or \code{matrix} to LaTex \tab \cr
+
+    	    \code{xth}  \tab \code{ftable} to HTML \tab \cr
+
+            \code{xta}  \tab Prints a summary. Cell entries are: \tab \cr
+                        \tab    \tab                N   \cr
+                        \tab    \tab         Expected   \cr
+                        \tab    \tab    N / Row Total   \cr
+                        \tab    \tab    N / Col Total   \cr
+                        \tab    \tab    N / Table Total
+            }
+
+Additional
+
+             \code{subset} has arg: drop.unused.levels.
+
+             \code{\%regex\%} match one or more regular expressions with multiple string array.
+
+             \code{expected} calculate expected cell frequencies from a array, matrix or ftable.
+            }
+
         \usage{
         mftable(z, ...)
         xta(z, dig=3, expected=FALSE, prop.c=TRUE, prop.r=TRUE, prop.t=TRUE, correct=NA)
@@ -42,7 +53,7 @@
         xtp(z, rcsum=TRUE, dig=3)
         xte(z, dig=3)
         xtl(z, size='tiny', align='center', caption=NULL, loc='!htbp', hline=FALSE)
-        xtl.default(m, size='tiny', align='center', caption=NULL, loc='!htbp', prn=TRUE)
+        xtl(m, size='tiny', align='center', caption=NULL, loc='!htbp', prn=TRUE)
         xth(z, ...)
         xts(z, dig=3)
         ltx(z, title="", caption="", label="", loc="!htbp")
@@ -51,27 +62,28 @@
         regex_array \%regex\% str_array
         }
         \arguments{
-          \item{z}{ A \code{ftable} or \code{mftable} object.}
-          \item{dig}{ Number of digits.}
-          \item{expected}{ Boolen, show expected values.}
-          \item{prop.r}{ Boolen, show row proportions.}
-          \item{prop.c}{ Boolen, show column proportions.}
-          \item{prop.t}{ Boolen, show cell proportion of total.}
-          \item{correct}{ Boolen, if given show chisq.test with continuity correction as specified.}
-          \item{rcsum}{ Boolen, show row and column totals.}
-          \item{size}{ Font size, i.e. any valid LaTeX specification.}
-          \item{align}{'left', 'center', 'right'.}
-          \item{caption}{ Subtitel of LaTeX or HTML tabel.}
-          \item{loc}{LaTeX table placement.}
-          \item{hline}{ Boolean, draw horizontal lines.}
-          \item{title}{ String, title of table.}
-          \item{prn}{ Boolean, show rownames.}
-          \item{m}{ 2D matrix or mftable object}
-	      \item{...}{ Extra arguments for mftable, R2HTML::HTML, base::subset}
-	      \item{drop.unused.levels}{ Boolen whether or not to refactorize}
-	      \item{regex_array}{ Array of one or more regular expressions}
-	      \item{str_array}{ Array of one or more strings}
-	      \item{data}{ DataFrame}
+            \item{z}{ A \code{ftable} or \code{mftable} object.}
+            \item{dig}{ Number of digits.}
+            \item{expected}{ Boolen, show expected values.}
+            \item{prop.r}{ Boolen, show cell proportion of row.}
+            \item{prop.c}{ Boolen, show cell proportion of column.}
+            \item{prop.t}{ Boolen, show cell proportion of total.}
+            \item{correct}{ Boolen, if given show chisq.test with continuity correction as specified.}
+            \item{rcsum}{ Boolen, show row and column totals.}
+            \item{size}{ Font size, i.e. any valid LaTeX specification.}
+            \item{align}{ 'left', 'center', 'right'.}
+            \item{caption}{ Subtitel of LaTeX or HTML tabel.}
+            \item{loc}{ LaTeX table placement.}
+            \item{hline}{ Boolean, draw horizontal lines.}
+            \item{label}{ String, subtitle.}
+            \item{title}{ String, title of table.}
+            \item{prn}{ Boolean, show rownames.}
+            \item{m}{ 2D matrix or mftable object}
+	        \item{...}{ Extra arguments for mftable, R2HTML::HTML, base::subset}
+	        \item{drop.unused.levels}{ Boolen whether or not to refactorize}
+	        \item{regex_array}{ Array of one or more regular expressions}
+	        \item{str_array}{ Array of one or more strings}
+	        \item{data}{ DataFrame}
         }
         \value{
 	      \code{mftable} A mftable object.
