@@ -30,8 +30,11 @@ setClass('mftable', representation(t='matrix', nr='integer', nc='integer', di='v
 
 mftable <- function(z, ...) {
     # create a mftable like ftable object i.e. from a formula, table or whatever
-if(class(z) != 'ftable')
+bs=1
+if(class(z) != 'ftable') {
     x <- ftable(z, ...)
+    bs=2
+    }
 else
     x <- z
 
@@ -54,9 +57,9 @@ while(TRUE) {
             z<-rbind(z,as.character(x[i,]))
         z<-cbind('', z)
         z<-cbind(unlist(attr(x, 'row.vars')), z)
-        y<-c(unlist(rv), '', rep('', ccp[1]+1))
+        y<-c(unlist(rv), rep('', ccp[1]+bs))
         z<-rbind(y, z)
-        y<-c('', unlist(cv), '', unlist(attr(x, 'col.vars')) )
+        y<-c(rep('', bs), unlist(cv), unlist(attr(x, 'col.vars')) )
         z<-rbind(y,z)
         break
         }
