@@ -143,6 +143,12 @@ y
 
 as.numeric.mftable<-function(z) as.double.mftable(z)
 
+ncr <- function(z){
+    # numeric row and column indexes
+    d<-dim(z@t)
+    y<-list(row=(z@nc+1):d[1], col=(z@nr+1):d[2])
+    return(y)
+}
 
 xta.mftable<-function(z, dig=3, expected=FALSE, prop.c = TRUE, prop.r = TRUE, prop.t = TRUE, correct=NA){
 # print N, N/row total, N/column total and N/table total for a mftable object

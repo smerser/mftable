@@ -9,9 +9,13 @@
         \alias{xtl}
 	    \alias{xth}
 	    \alias{ltx}
+	    \alias{ncr}
+	    \alias{as.numeric}
+	    \alias{as.double}
         \alias{expected}
         \alias{subset}
         \alias{\%regex\%}
+
         \title{CrossTabulation - extending ftable}
 
         \description{
@@ -33,12 +37,16 @@
                         \tab    \tab         Expected   \cr
                         \tab    \tab    N / Row Total   \cr
                         \tab    \tab    N / Col Total   \cr
-                        \tab    \tab    N / Table Total
+                        \tab    \tab    N / Table Total \cr
+
+            \code{ltx}  \tab LateX output. OBS: z must be a \code{ftable} object!
             }
 
-Additional auxillary functions:
+        Additional auxillary functions:
 
-            \code{as.double} the numerical matrix of a \code{mftable} object
+            \code{as.numeric} and \code{as.double} returns the numerical matrix of a \code{mftable} object
+
+            \code{ncr} return row and column indexes af the numeric information
 
             \code{expected} calculate expected cell frequencies from a array, matrix or ftable.
 
@@ -60,7 +68,9 @@ Additional auxillary functions:
         xth(z, ...)
         xts(z, dig=3)
         ltx(z, title="", caption="", label="", loc="!htbp")
+        as.numeric(z)
         as.double(z)
+        ncr(z)
         expected(m)
         subset(data, ..., drop.unused.levels=TRUE)
         regex_array \%regex\% str_array
@@ -91,7 +101,7 @@ Additional auxillary functions:
         }
         \value{
 	      \code{mftable} A mftable object.
-          \code{ltx} void.
+          \code{ltx} void; i.e. just print
           \code{expected} matrix of expected cell frequecies.
         }
         \author{Soren Merser \email{soren.merser@gmail.com}}
@@ -127,4 +137,4 @@ Additional auxillary functions:
         #       file='c://Programmer/Apache Group/Apache2/htdocs/test.html'
         #       )
         }
-        \keyword{Utilities}
+        \keyword{Utilities, ftable, Crosstab, Pivot, Contingency table, Regular expression, subset, factor}
