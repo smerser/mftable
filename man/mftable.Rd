@@ -36,14 +36,17 @@
                         \tab    \tab    N / Table Total
             }
 
-Additional
+Additional auxillary functions:
 
-             \code{subset} has arg: drop.unused.levels.
+            \code{as.double} the numerical matrix of a \code{mftable} object
 
-             \code{\%regex\%} match one or more regular expressions with multiple string array.
+            \code{expected} calculate expected cell frequencies from a array, matrix or ftable.
 
-             \code{expected} calculate expected cell frequencies from a array, matrix or ftable.
-            }
+            \code{subset} has arg: drop.unused.levels.
+
+            \code{\%regex\%} match one or more regular expressions with multiple string array.
+
+        }
 
         \usage{
         mftable(z, ...)
@@ -57,6 +60,7 @@ Additional
         xth(z, ...)
         xts(z, dig=3)
         ltx(z, title="", caption="", label="", loc="!htbp")
+        as.double(z)
         expected(m)
         subset(data, ..., drop.unused.levels=TRUE)
         regex_array \%regex\% str_array

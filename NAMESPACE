@@ -1,5 +1,5 @@
 exportClasses(mftable)
-export(mftable, xts, xte, xtr, xtc, xtp, xta, xtl, xth, ltx, expected, '%regex%', subset)
+export(mftable, xts, xte, xtr, xtc, xtp, xta, xtl, xth, ltx, expected, as.double, '%regex%', subset)
 S3method(xts, mftable)
 S3method(xts, ftable)
 S3method(xts, matrix)
@@ -27,5 +27,7 @@ S3method(xtl, matrix)
 
 S3method(xth, mftable)
 S3method(xth, ftable)
+
+S3method(as.double, mftable)
 import('methods', 'R2HTML')
 
