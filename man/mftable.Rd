@@ -39,7 +39,7 @@
                         \tab    \tab    N / Col Total   \cr
                         \tab    \tab    N / Table Total \cr
 
-            \code{ltx}  \tab LateX output. OBS: z must be a \code{ftable} object!
+            \code{ltx}  \tab LateX output. OBS: this function requires z to be a \code{ftable} object!
             }
 
         Additional auxillary functions:
