@@ -32,12 +32,26 @@ mftable <- function(z, ...) {
     # create a mftable like ftable object i.e. from a formula, table or whatever
 
 bs=1
-if(class(z) != 'ftable') {
+if(class(z) == 'mftable'){
+    return(z)
+}
+
+else if(class(z) %in% c('matrix', 'table')){
+    bs <- 2
     x <- ftable(z, ...)
-    bs=2
-    }
-else
+}
+
+else if(class(z) == 'formula'){
+    x <- ftable(z, ...)
+}
+
+else if(class(z) == 'ftable'){
     x <- z
+}
+
+else {
+    print("Arguments not castable to 'mftable'")
+}
 
 while(TRUE) {
     lenc<-NULL
@@ -61,7 +75,7 @@ while(TRUE) {
         y<-c(unlist(rv), rep('', ccp[1]+bs))
         z<-rbind(y, z)
         y<-c(rep('', bs), unlist(cv), unlist(attr(x, 'col.vars')) )
-        z<-rbind(y,z)
+        z<-rbind(y, z)
         break
         }
     y<-unlist(attr(x, 'row.vars')[ngr])
@@ -161,7 +175,7 @@ if(expected==FALSE & prop.c==FALSE & prop.r==FALSE & prop.t==FALSE)  {
             }
         }
 else {
-    e<-xte(z, dig)
+    e<-xts(xte(z, dig))
     r<-xtr(z, dig)
     c<-xtc(z, dig)
     wdt<-max(if(expected) nchar(e@t) else nchar(r@t), nchar(rownames(e@t)), nchar(colnames(e@t)))+1
@@ -425,9 +439,9 @@ xtc.default<-function(z, dig=3) round(prop.table(z,2), dig)
 
 # summary, i.e. counts, expected, row prop, col prop, prop of total and totals
 xta<-function(z, dig = 3, expected = FALSE, prop.c = TRUE, prop.r = TRUE, prop.t = TRUE, correct = NA) { UseMethod("xta") }
-xta.ftable<-function(z, dig = 3, expected = FALSE, prop.c = TRUE, prop.r = TRUE, prop.t = TRUE, correct = NA) xta(mftable(z))
+xta.ftable<-function(z, dig = 3, expected = FALSE, prop.c = TRUE, prop.r = TRUE, prop.t = TRUE, correct = NA) xta(mftable(z, dig, expected, prop.c, prop.r, prop.t, correct))
 
-xta.table<-function(z, dig = 3, expected = FALSE, prop.c = TRUE, prop.r = TRUE, prop.t = TRUE, correct = NA) xta(mftable(z))
+xta.table<-function(z, dig = 3, expected = FALSE, prop.c = TRUE, prop.r = TRUE, prop.t = TRUE, correct = NA)  xta(mftable(z, dig, expected, prop.c, prop.r, prop.t, correct))
 
 xta.matrix<-function(z, dig = 3, expected = FALSE, prop.c = TRUE, prop.r = TRUE, prop.t = TRUE, correct = NA) {
     # works with matrix and arrays
