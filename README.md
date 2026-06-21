@@ -28,5 +28,10 @@ Two extra functions included:
 ```
 git clone https://github.com/smerser/mftable.git
 
+library(devtools)
+install_github('smerser/mftable')
+
+
 R CMD INSTALL --with-keep.source mftable
 ```
+$
