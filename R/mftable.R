@@ -49,7 +49,7 @@ pNr <- function(z, ...) { UseMethod("pNr") }
 
 # ── Constructor ────────────────────────────────────────────────────────────────
 mftable <- function(z, ...) {
-    
+
     bs <- 1
     if (inherits(z, 'mftable')) {
         return(z)
@@ -63,7 +63,7 @@ mftable <- function(z, ...) {
     } else {
         stop("Arguments not castable to 'mftable'")
     }
-    
+
     while (TRUE) {
         lenc <- NULL
         for (i in attr(x, 'col.vars'))
@@ -71,14 +71,14 @@ mftable <- function(z, ...) {
         ngc  <- length(lenc)
         ccp  <- rev(cumprod(rev(lenc)))
         cv   <- names(attr(x, 'col.vars'))
-        
+
         lenr <- NULL
         for (i in attr(x, 'row.vars'))
             lenr <- c(lenr, length(unlist(i)))
         ngr  <- length(lenr)
         rcp  <- rev(cumprod(rev(lenr)))
         rv   <- names(attr(x, 'row.vars'))
-        
+
         if (ngc == 1 && ngr == 1) {
             # Single row and column variable
             z <- NULL
@@ -92,7 +92,7 @@ mftable <- function(z, ...) {
             z <- rbind(y, z)
             break
         }
-        
+
         y <- unlist(attr(x, 'row.vars')[ngr])
         z <- cbind(y, x)
         y <- NULL
@@ -104,26 +104,26 @@ mftable <- function(z, ...) {
             z <- cbind(y, z)
             y <- NULL
         }
-        
+
         # Insert vertical empty column
         len <- dim(z)[2]
         z   <- cbind(z[, 1:ngr], '', z[, (ngr + 1):len])
         len <- len + 1
-        
+
         # Process cols
         y <- c(rv, rep('', len - ngr))
         z <- rbind(y, z)
-        
+
         if (ngc == 1) {
             y <- c(rep('', ngr), cv[ngc], unlist(attr(x, 'col.vars')[ngc]))
             z <- rbind(y, z)
             break
         }
-        
+
         y <- c(rep('', ngr), cv[ngc],
                rep(unlist(attr(x, 'col.vars')[ngc]), cumprod(lenc)[ngc - 1]))
         z <- rbind(y, z)
-        
+
         for (i in (ngc - 1):(if (ngc == 1) 0 else 1)) {
             y <- c(rep('', ngr), cv[i])
             for (h in 1:(cumprod(lenc)[i + 1] / (lenc[i] * lenc[i + 1])))
@@ -135,11 +135,11 @@ mftable <- function(z, ...) {
         }
         break
     } # END WHILE
-    
+
     rownames(z) <- z[, 1]
     colnames(z) <- z[1, ]
     z <- z[-1, -1]
-    
+
     # ftable look-alike formatting
     z[, 1:ngr] <- format(z[, 1:ngr], justify='left')
     z <- new('mftable', t=z, nr=as.integer(ngr), nc=as.integer(ngc), di=attr(x, 'dim'))
@@ -293,14 +293,14 @@ xtp.ftable <- function(z, rcsum=TRUE, dig=3) xtp(mftable(z), rcsum, dig)
 xta.mftable <- function(z, dig=3, expected=FALSE, prop.c=TRUE, prop.r=TRUE,
                         prop.t=TRUE, correct=NA) {
     s <- xts(z, dig)
-    
+
     cat("   Cell Contents\n|-----------------|\n|               N |\n")
     if (expected) cat("|        expected |\n")
     if (prop.r)   cat("|   N / Row Total |\n")
     if (prop.c)   cat("|   N / Col Total |\n")
     if (prop.t)   cat("| N / Table Total |\n")
     cat("|-----------------|\n\n\n")
-    
+
     if (!expected && !prop.c && !prop.r && !prop.t) {
         wdt  <- max(nchar(s@t), nchar(rownames(s@t)), nchar(colnames(s@t)))
         s@t  <- formatC(s@t, width=wdt)
@@ -321,7 +321,7 @@ xta.mftable <- function(z, dig=3, expected=FALSE, prop.c=TRUE, prop.r=TRUE,
         cat('\n', rep('-', (wdt + 2) * ncol(e@t)), '\n', sep='')
         cn[z@nr] <- ''
         colnames(s@t) <- cn
-        
+
         if (prop.t && !prop.r && !prop.c && !expected) {
             p   <- xtp(z, rcsum=TRUE, dig)
             res <- list(s=s@t, e=e@t, p=p@t, c=cbind(cc@t, ''), r=rbind(r@t, ''))
@@ -330,7 +330,7 @@ xta.mftable <- function(z, dig=3, expected=FALSE, prop.c=TRUE, prop.r=TRUE,
             res <- list(s=s@t, e=e@t, p=cbind(rbind(p@t, ''), ''),
                         c=cbind(cc@t, ''), r=rbind(r@t, ''))
         }
-        
+
         d <- dim(s@t)
         for (i in 1:d[1]) {
             for (j in 1:d[2]) {
@@ -365,7 +365,7 @@ xta.mftable <- function(z, dig=3, expected=FALSE, prop.c=TRUE, prop.r=TRUE,
             cat(rep('-', (wdt + 2) * ncol(e@t)), '\n', sep='')
         }
     }
-    
+
     if (!is.na(correct)) {
         correct <- as.logical(correct)
         print(chisq.test(as.double(z), correct=correct))
@@ -395,7 +395,7 @@ xta.matrix <- function(z, dig=3, expected=FALSE, prop.c=TRUE, prop.r=TRUE,
 # ── xth: HTML output ───────────────────────────────────────────────────────────
 xth.ftable  <- function(z, ...) xth(mftable(z), ...)
 
-xth.mftable <- function(z, caption='', color='#E0E0E0', ...) {
+xth.mftable <- function(z, caption='', ...) {
     a <- cbind(attr(z@t, 'dimnames')[[1]], z@t)
     a <- rbind(c('', attr(z@t, 'dimnames')[[2]]), a)
     rownames(a) <- NULL
@@ -415,8 +415,7 @@ xth.mftable <- function(z, caption='', color='#E0E0E0', ...) {
         i <- i + 1
     }
     sub(' class=dataframe> ',
-        paste(' class=dataframe><col span="', z@nr + 1,
-              '" style="background-color: ', color, ';" />', sep=''), a)
+        paste0(' class=dataframe><col span="', z@nr + 1, ' />', sep=''), a)
 }
 
 # ── xtl: LaTeX output ─────────────────────────────────────────────────────────
@@ -495,20 +494,20 @@ ltx <- function(z, title="", caption="", label="", loc="!htbp") {
     nc       <- ncol(ft)
     ncolvars <- length(cv)
     nrowvars <- length(rv)
-    
+
     ft[ncolvars, 1:nrowvars] <- ft[ncolvars + 1, 1:nrowvars]
-    
+
     align1 <- paste(rep("l", ncolvars), collapse="")
     align2 <- paste(rep("r", nc - ncolvars), collapse="")
-    
+
     cat("\\ctable[ caption={", caption, "}, label=", label, ",pos=", loc,
         ", botcap]{", align1, align2, "}{} \n{\\FL\n", sep="")
-    
+
     for (i in 1:ncolvars) {
         head <- paste("\\multicolumn{1}{c}{", ft[i, ], "}", collapse="&\n", sep="")
         if (i == ncolvars) cat(head, "\n\\ML\n") else cat(head, "\n\\NN\n")
     }
-    
+
     for (i in (ncolvars + 2):nr) {
         cat(paste(ft[i, ], collapse="&"))
         if (i != nr) {
