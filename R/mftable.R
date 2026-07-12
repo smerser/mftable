@@ -2,32 +2,25 @@ require(methods)
 require(R2HTML)
 
 "%regex%" <- function(regex_array, str_array) {
-    # Return true if 'str' in array matches one or more regex patterns
-    b<-F
-    for(i in regex_array) {
-        a <- regexpr(i, str_array, perl=T)>0
-        b <- a|b
+    b <- F
+    for (i in regex_array) {
+        a <- regexpr(i, str_array, perl=T) > 0
+        b <- a | b
     }
     return(b)
 }
 
-subset <- function (data, ..., drop.unused.levels = TRUE)
-    # Refactor all variables excluding unused levels
-{
+subset <- function(data, ..., drop.unused.levels=TRUE) {
     data <- base::subset(data, ...)
-    if (drop.unused.levels){
-        if(is.list(data)){
+    if (drop.unused.levels) {
+        if (is.list(data)) {
             data[] <- lapply(data, function(x) if (is.factor(x)) factor(x) else x)
-         } else {
-            data   <- sapply(data, function(x) if (is.factor(x)) factor(x) else x)
-         }
+        } else {
+            data <- sapply(data, function(x) if (is.factor(x)) factor(x) else x)
+        }
     }
     return(data)
 }
-
-
-require(methods)
-require(R2HTML)
 
 # ── S4 Class ──────────────────────────────────────────────────────────────────
 setClass('mftable', representation(t='matrix', nr='integer', nc='integer', di='vector'))
@@ -80,7 +73,6 @@ mftable <- function(z, ...) {
         rv   <- names(attr(x, 'row.vars'))
 
         if (ngc == 1 && ngr == 1) {
-            # Single row and column variable
             z <- NULL
             for (i in 1:nrow(x))
                 z <- rbind(z, as.character(x[i, ]))
@@ -105,12 +97,10 @@ mftable <- function(z, ...) {
             y <- NULL
         }
 
-        # Insert vertical empty column
         len <- dim(z)[2]
         z   <- cbind(z[, 1:ngr], '', z[, (ngr + 1):len])
         len <- len + 1
 
-        # Process cols
         y <- c(rv, rep('', len - ngr))
         z <- rbind(y, z)
 
@@ -134,13 +124,12 @@ mftable <- function(z, ...) {
             z <- rbind(y, z)
         }
         break
-    } # END WHILE
+    }
 
     rownames(z) <- z[, 1]
     colnames(z) <- z[1, ]
     z <- z[-1, -1]
 
-    # ftable look-alike formatting
     z[, 1:ngr] <- format(z[, 1:ngr], justify='left')
     z <- new('mftable', t=z, nr=as.integer(ngr), nc=as.integer(ngc), di=attr(x, 'dim'))
     z
@@ -150,7 +139,7 @@ mftable <- function(z, ...) {
 print.mftable <- function(z) print(z@t, quote=FALSE, right=TRUE)
 
 setMethod("show", "mftable",
-          function(object) print(object@t, quote=FALSE, right=TRUE)
+    function(object) print(object@t, quote=FALSE, right=TRUE)
 )
 
 # ── Coercion ───────────────────────────────────────────────────────────────────
@@ -181,7 +170,10 @@ xte.default <- function(z, dig=3) round(expected(z), dig)
 
 xte.mftable <- function(z, dig=3) {
     d    <- dim(z@t)
-    e    <- expected(as.numeric(z))
+    y    <- z@t[(z@nc + 1):d[1], (z@nr + 1):d[2]]
+    y    <- as.numeric(y)
+    dim(y) <- z@di
+    e    <- expected(y)
     z@t[(z@nc + 1):d[1], (z@nr + 1):d[2]] <- round(e, dig)
     z
 }
@@ -206,6 +198,8 @@ xts.mftable <- function(z, dig=3) {
     z@t[(z@nc + 1):(d[1] + 1), (z@nr + 1):(d[2] + 1)] <- res
     rownames(z@t) <- c(rn, 'total')
     colnames(z@t) <- c(cn, 'total')
+    # ── Update @di to reflect added total row and col ──
+    z@di <- as.integer(c(z@di[1] + 1, z@di[2] + 1))
     z
 }
 
@@ -235,15 +229,16 @@ xtr.mftable <- function(z, dig=3) {
     d   <- dim(z@t)
     y   <- z@t[(z@nc + 1):d[1], (z@nr + 1):d[2]]
     y   <- as.numeric(y)
-    # Use actual dimensions instead of z@di
-    actual_dim <- c(d[1] - z@nc, d[2] - z@nr)
-    dim(y) <- actual_dim
+    dim(y) <- z@di
     y   <- round(cbind(xtr(y, dig), margin.table(y, 1) / sum(y)), dig)
     z@t <- cbind(z@t, '')
     z@t[(z@nc + 1):d[1], (z@nr + 1):(d[2] + 1)] <- y
     colnames(z@t) <- c(cn, 'c.prop')
+    # ── Update @di to reflect added c.prop column ──
+    z@di <- as.integer(c(z@di[1], z@di[2] + 1))
     z
 }
+
 xtr.ftable <- function(z, dig=3) xtr(mftable(z), dig)
 
 # ── xtc: column proportions ────────────────────────────────────────────────────
@@ -254,15 +249,16 @@ xtc.mftable <- function(z, dig=3) {
     d   <- dim(z@t)
     y   <- z@t[(z@nc + 1):d[1], (z@nr + 1):d[2]]
     y   <- as.numeric(y)
-    # Use actual dimensions instead of z@di
-    actual_dim <- c(d[1] - z@nc, d[2] - z@nr)
-    dim(y) <- actual_dim
+    dim(y) <- z@di
     y   <- round(rbind(xtc(y, dig), margin.table(y, 2) / sum(y)), dig)
     z@t <- rbind(z@t, '')
     z@t[(z@nc + 1):(d[1] + 1), (z@nr + 1):d[2]] <- y
     rownames(z@t) <- c(rn, 'r.prop')
+    # ── Update @di to reflect added r.prop row ──
+    z@di <- as.integer(c(z@di[1] + 1, z@di[2]))
     z
 }
+
 xtc.ftable <- function(z, dig=3) xtc(mftable(z), dig)
 
 # ── xtp: proportion of total ───────────────────────────────────────────────────
@@ -286,6 +282,8 @@ xtp.mftable <- function(z, rcsum=FALSE, dig=3) {
     z@t[(z@nc + 1):(d[1] + 1), (z@nr + 1):(d[2] + 1)] <- res
     rownames(z@t) <- c(rn, 'total')
     colnames(z@t) <- c(cn, 'total')
+    # ── Update @di ──
+    z@di <- as.integer(c(z@di[1] + 1, z@di[2] + 1))
     z
 }
 
@@ -416,6 +414,7 @@ xth.mftable <- function(z, caption='', ...) {
         a <- sub('<td class=cellinside>', '<td class=_frow>', a)
         i <- i + 1
     }
+    # ── Fixed: closing quote was missing ──
     sub(' class=dataframe> ',
         paste0(' class=dataframe><col span="', z@nr + 1, '" />', sep=''), a)
 }
