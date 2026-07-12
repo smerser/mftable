@@ -235,14 +235,15 @@ xtr.mftable <- function(z, dig=3) {
     d   <- dim(z@t)
     y   <- z@t[(z@nc + 1):d[1], (z@nr + 1):d[2]]
     y   <- as.numeric(y)
-    dim(y) <- z@di
+    # Use actual dimensions instead of z@di
+    actual_dim <- c(d[1] - z@nc, d[2] - z@nr)
+    dim(y) <- actual_dim
     y   <- round(cbind(xtr(y, dig), margin.table(y, 1) / sum(y)), dig)
     z@t <- cbind(z@t, '')
     z@t[(z@nc + 1):d[1], (z@nr + 1):(d[2] + 1)] <- y
     colnames(z@t) <- c(cn, 'c.prop')
     z
 }
-
 xtr.ftable <- function(z, dig=3) xtr(mftable(z), dig)
 
 # ── xtc: column proportions ────────────────────────────────────────────────────
@@ -253,14 +254,15 @@ xtc.mftable <- function(z, dig=3) {
     d   <- dim(z@t)
     y   <- z@t[(z@nc + 1):d[1], (z@nr + 1):d[2]]
     y   <- as.numeric(y)
-    dim(y) <- z@di
+    # Use actual dimensions instead of z@di
+    actual_dim <- c(d[1] - z@nc, d[2] - z@nr)
+    dim(y) <- actual_dim
     y   <- round(rbind(xtc(y, dig), margin.table(y, 2) / sum(y)), dig)
     z@t <- rbind(z@t, '')
     z@t[(z@nc + 1):(d[1] + 1), (z@nr + 1):d[2]] <- y
     rownames(z@t) <- c(rn, 'r.prop')
     z
 }
-
 xtc.ftable <- function(z, dig=3) xtc(mftable(z), dig)
 
 # ── xtp: proportion of total ───────────────────────────────────────────────────
@@ -415,7 +417,7 @@ xth.mftable <- function(z, caption='', ...) {
         i <- i + 1
     }
     sub(' class=dataframe> ',
-        paste0(' class=dataframe><col span="', z@nr + 1, ' />', sep=''), a)
+        paste0(' class=dataframe><col span="', z@nr + 1, '" />', sep=''), a)
 }
 
 # ── xtl: LaTeX output ─────────────────────────────────────────────────────────
