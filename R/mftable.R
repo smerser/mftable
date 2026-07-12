@@ -38,6 +38,7 @@ xta <- function(z, dig=3, expected=FALSE, prop.c=TRUE, prop.r=TRUE, prop.t=TRUE,
 }
 xte <- function(z, dig=3) { UseMethod("xte") }
 xth <- function(z, ...) { UseMethod("xth") }
+xtm <- function(z, data, y_col, dig=3) { UseMethod("xtm") }
 pNr <- function(z, ...) { UseMethod("pNr") }
 
 # ── Constructor ────────────────────────────────────────────────────────────────
@@ -180,6 +181,42 @@ xte.mftable <- function(z, dig=3) {
 
 xte.ftable <- function(z, dig=3) xte(mftable(z), dig)
 
+# ── xtm: cell means of a numeric variable ─────────────────────────────────────
+xtm.ftable <- function(z, data, y_col, dig=3) xtm(mftable(z), data, y_col, dig)
+
+xtm.mftable <- function(z, data, y_col, dig=3) {
+    d       <- dim(z@t)
+    row_idx <- (z@nc + 1):d[1]
+    col_idx <- (z@nr + 1):d[2]
+
+    row_varnames <- trimws(rownames(z@t)[1:z@nc])
+    col_varnames <- trimws(colnames(z@t)[1:z@nr])
+
+    rn <- trimws(rownames(z@t)[row_idx])
+    cn <- trimws(colnames(z@t)[col_idx])
+
+    means_mat <- matrix('', nrow=length(row_idx), ncol=length(col_idx),
+                        dimnames=list(rn, cn))
+
+    for (i in seq_along(rn)) {
+        for (j in seq_along(cn)) {
+            mask <- rep(TRUE, nrow(data))
+            for (rv in row_varnames)
+                if (rv %in% colnames(data))
+                    mask <- mask & trimws(as.character(data[[rv]])) == rn[i]
+            for (cv in col_varnames)
+                if (cv %in% colnames(data))
+                    mask <- mask & trimws(as.character(data[[cv]])) == cn[j]
+            vals <- data[[y_col]][mask]
+            if (length(vals) > 0)
+                means_mat[i, j] <- round(mean(vals, na.rm=TRUE), dig)
+        }
+    }
+
+    z@t[row_idx, col_idx] <- means_mat
+    z
+}
+
 # ── xts: counts + totals ───────────────────────────────────────────────────────
 xts.default <- function(z, dig=3) {
     z <- rbind(z, colSums(z))
@@ -198,7 +235,6 @@ xts.mftable <- function(z, dig=3) {
     z@t[(z@nc + 1):(d[1] + 1), (z@nr + 1):(d[2] + 1)] <- res
     rownames(z@t) <- c(rn, 'total')
     colnames(z@t) <- c(cn, 'total')
-    # ── Update @di to reflect added total row and col ──
     z@di <- as.integer(c(z@di[1] + 1, z@di[2] + 1))
     z
 }
@@ -234,7 +270,6 @@ xtr.mftable <- function(z, dig=3) {
     z@t <- cbind(z@t, '')
     z@t[(z@nc + 1):d[1], (z@nr + 1):(d[2] + 1)] <- y
     colnames(z@t) <- c(cn, 'c.prop')
-    # ── Update @di to reflect added c.prop column ──
     z@di <- as.integer(c(z@di[1], z@di[2] + 1))
     z
 }
@@ -254,7 +289,6 @@ xtc.mftable <- function(z, dig=3) {
     z@t <- rbind(z@t, '')
     z@t[(z@nc + 1):(d[1] + 1), (z@nr + 1):d[2]] <- y
     rownames(z@t) <- c(rn, 'r.prop')
-    # ── Update @di to reflect added r.prop row ──
     z@di <- as.integer(c(z@di[1] + 1, z@di[2]))
     z
 }
@@ -282,7 +316,6 @@ xtp.mftable <- function(z, rcsum=FALSE, dig=3) {
     z@t[(z@nc + 1):(d[1] + 1), (z@nr + 1):(d[2] + 1)] <- res
     rownames(z@t) <- c(rn, 'total')
     colnames(z@t) <- c(cn, 'total')
-    # ── Update @di ──
     z@di <- as.integer(c(z@di[1] + 1, z@di[2] + 1))
     z
 }
@@ -414,7 +447,6 @@ xth.mftable <- function(z, caption='', ...) {
         a <- sub('<td class=cellinside>', '<td class=_frow>', a)
         i <- i + 1
     }
-    # ── Fixed: closing quote was missing ──
     sub(' class=dataframe> ',
         paste0(' class=dataframe><col span="', z@nr + 1, '" />', sep=''), a)
 }
