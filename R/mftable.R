@@ -181,8 +181,12 @@ xte.mftable <- function(z, dig=3) {
 
 xte.ftable <- function(z, dig=3) xte(mftable(z), dig)
 
-# ── xtm: cell means of a numeric variable ─────────────────────────────────────
-xtm.ftable <- function(z, data, y_col, stat="mean", dig=3) xtm(mftable(z), data, y_col, dig)xtm.mftable <- function(z, data, y_col, stat="mean", dig=3) {
+# ── xtm: cell statistic of a numeric variable ──────────────────────────────────
+xtm.ftable <- function(z, data, y_col, stat="mean", dig=3) {
+    xtm(mftable(z), data, y_col, stat, dig)
+}
+
+xtm.mftable <- function(z, data, y_col, stat="mean", dig=3) {
     d       <- dim(z@t)
     row_idx <- (z@nc + 1):d[1]
     col_idx <- (z@nr + 1):d[2]
@@ -219,7 +223,7 @@ xtm.ftable <- function(z, data, y_col, stat="mean", dig=3) xtm(mftable(z), data,
     z@t[row_idx, col_idx] <- stat_mat
     z
 }
-                             
+
 # ── xts: counts + totals ───────────────────────────────────────────────────────
 xts.default <- function(z, dig=3) {
     z <- rbind(z, colSums(z))
