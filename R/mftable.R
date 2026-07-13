@@ -38,7 +38,6 @@ xta <- function(z, dig=3, expected=FALSE, prop.c=TRUE, prop.r=TRUE, prop.t=TRUE,
 }
 xte <- function(z, dig=3) { UseMethod("xte") }
 xth <- function(z, ...) { UseMethod("xth") }
-xtm <- function(z, data, y_col, stat="mean", dig=3) { UseMethod("xtm") }
 pNr <- function(z, ...) { UseMethod("pNr") }
 
 # ── Constructor ────────────────────────────────────────────────────────────────
