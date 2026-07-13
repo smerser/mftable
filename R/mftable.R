@@ -183,7 +183,7 @@ xte.ftable <- function(z, dig=3) xte(mftable(z), dig)
 
 # ── xtm: cell statistic of a numeric variable ──────────────────────────────────
 xtm.ftable <- function(z, data, y_col, stat="mean", dig=3) {
-    xtm(mftable(z), data, y_col, stat, dig)
+    invisible(xtm(mftable(z), data, y_col, stat, dig))
 }
 
 xtm.mftable <- function(z, data, y_col, stat="mean", dig=3) {
@@ -221,7 +221,7 @@ xtm.mftable <- function(z, data, y_col, stat="mean", dig=3) {
         }
     }
     z@t[row_idx, col_idx] <- stat_mat
-    z
+    invisible(z)
 }
 
 # ── xts: counts + totals ───────────────────────────────────────────────────────
