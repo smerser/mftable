@@ -38,7 +38,7 @@ xta <- function(z, dig=3, expected=FALSE, prop.c=TRUE, prop.r=TRUE, prop.t=TRUE,
 }
 xte <- function(z, dig=3) { UseMethod("xte") }
 xth <- function(z, ...) { UseMethod("xth") }
-xtm <- function(z, data, y_col, dig=3) { UseMethod("xtm") }
+xtm <- function(z, data, y_col, stat="mean", dig=3) { UseMethod("xtm") }
 pNr <- function(z, ...) { UseMethod("pNr") }
 
 # ── Constructor ────────────────────────────────────────────────────────────────
@@ -182,22 +182,26 @@ xte.mftable <- function(z, dig=3) {
 xte.ftable <- function(z, dig=3) xte(mftable(z), dig)
 
 # ── xtm: cell means of a numeric variable ─────────────────────────────────────
-xtm.ftable <- function(z, data, y_col, dig=3) xtm(mftable(z), data, y_col, dig)
-
-xtm.mftable <- function(z, data, y_col, dig=3) {
+xtm.ftable <- function(z, data, y_col, stat="mean", dig=3) xtm(mftable(z), data, y_col, dig)xtm.mftable <- function(z, data, y_col, stat="mean", dig=3) {
     d       <- dim(z@t)
     row_idx <- (z@nc + 1):d[1]
     col_idx <- (z@nr + 1):d[2]
-
     row_varnames <- trimws(rownames(z@t)[1:z@nc])
     col_varnames <- trimws(colnames(z@t)[1:z@nr])
-
     rn <- trimws(rownames(z@t)[row_idx])
     cn <- trimws(colnames(z@t)[col_idx])
 
-    means_mat <- matrix('', nrow=length(row_idx), ncol=length(col_idx),
-                        dimnames=list(rn, cn))
+    stat_fn <- switch(tolower(stat),
+        "mean"   = function(x) mean(x,   na.rm=TRUE),
+        "sd"     = function(x) sd(x,     na.rm=TRUE),
+        "median" = function(x) median(x, na.rm=TRUE),
+        "min"    = function(x) min(x,    na.rm=TRUE),
+        "max"    = function(x) max(x,    na.rm=TRUE),
+        function(x) mean(x, na.rm=TRUE)
+    )
 
+    stat_mat <- matrix('', nrow=length(row_idx), ncol=length(col_idx),
+                        dimnames=list(rn, cn))
     for (i in seq_along(rn)) {
         for (j in seq_along(cn)) {
             mask <- rep(TRUE, nrow(data))
@@ -209,14 +213,13 @@ xtm.mftable <- function(z, data, y_col, dig=3) {
                     mask <- mask & trimws(as.character(data[[cv]])) == cn[j]
             vals <- data[[y_col]][mask]
             if (length(vals) > 0)
-                means_mat[i, j] <- round(mean(vals, na.rm=TRUE), dig)
+                stat_mat[i, j] <- round(stat_fn(vals), dig)
         }
     }
-
-    z@t[row_idx, col_idx] <- means_mat
+    z@t[row_idx, col_idx] <- stat_mat
     z
 }
-
+                             
 # ── xts: counts + totals ───────────────────────────────────────────────────────
 xts.default <- function(z, dig=3) {
     z <- rbind(z, colSums(z))
